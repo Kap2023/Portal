@@ -1,106 +1,103 @@
 # Portal
 
-**Открывает любое запущенное окно «порталом» прямо вокруг курсора.** Зажали горячую клавишу — из-под курсора
-вылетает стеклянный список окон в стиле iOS Liquid Glass. Выбрали окно — оно раскрывается огненным кольцом,
-как портал Доктора Стрэнджа, и курсор оказывается ровно в его центре. Заскочили, взяли нужное, кликнули мимо —
-портал схлопывается, а окно возвращается туда, где было.
+**English** · [Русский](README.ru.md)
+
+**Opens any running window as a "portal" right around your mouse cursor.** Hold a hotkey and a glass window list in
+the style of iOS Liquid Glass springs out from under the cursor. Pick a window and it opens inside a ring of fire,
+like a Doctor Strange portal, with the cursor exactly in its center. Hop in, grab what you need, click elsewhere —
+the portal collapses and the window goes back exactly where it was.
 
 <p align="center">
-  <img src="docs/picker.png" width="420" alt="Список окон в стиле Liquid Glass">
-  <img src="docs/portal.png" width="420" alt="Окно, открытое порталом">
+  <img src="docs/picker.png" width="420" alt="Liquid Glass window list">
+  <img src="docs/portal.png" width="420" alt="A window opened as a portal">
 </p>
 
-## Возможности
+## Features
 
-- **Список окон у курсора** — как Alt+Tab, но там, куда вы смотрите. Капсулы из прозрачного стекла с линзой
-  по краям, иконки программ, выбранное окно подсвечено синим. Появляется пружинкой, как анимации в iOS.
-- **Портал вокруг курсора** — настоящее окно переносится к курсору и уменьшается, в нём можно полноценно
-  работать: печатать, копировать, перетаскивать. Окно проявляется изнутри раскрывающегося кольца искр.
-- **Возврат на место** — кликнули в другое окно или нажали горячую клавишу ещё раз: окно возвращается на своё
-  место и в прежнее состояние (свёрнутое снова сворачивается, развёрнутое разворачивается). Ничего не мигает.
-- **Поиск** — начните печатать название окна или программы. Раскладка не важна: «зщкефд» найдёт «portal».
-- **Плавность** — анимации идут в такт частоте монитора (вплоть до 240 Гц), кольцо рисуется в своём потоке.
-- **Автозапуск** — при первом запуске программа ставит себя в `%LOCALAPPDATA%\Portal` и запускается вместе с Windows.
+- **Window list at the cursor** — like Alt+Tab, but right where you're looking. Clear glass capsules with lens-like
+  refraction at the edges, app icons, the selected window highlighted in blue. Springs out with iOS-style motion.
+- **Portal around the cursor** — the real window is moved to the cursor and resized, so it is fully usable: type,
+  copy, drag and drop. The window is revealed from inside an expanding ring of sparks.
+- **Back where it was** — click another window or press the hotkey again and the window returns to its place and
+  state (a minimized window is minimized again, a maximized one is maximized again). Nothing flickers.
+- **Search** — start typing a window or app name. Keyboard layout doesn't matter: typing in the Russian layout by
+  mistake still finds the English name, and vice versa.
+- **Smooth** — animations are synced to your monitor's refresh rate (up to 240 Hz); the ring renders on its own thread.
+- **Autostart** — on first run the app installs itself to `%LOCALAPPDATA%\Portal` and starts with Windows.
 
-## Требования
+> The app's interface (search placeholder, tray menu, settings comments) is in Russian.
 
-- Windows 10 (версия 2004 или новее) или Windows 11.
-- Больше ничего: нужный .NET Framework 4 уже есть в Windows.
+## Requirements
 
-## Установка
+- Windows 10 (version 2004 or newer) or Windows 11.
+- Nothing else: the required .NET Framework 4 ships with Windows.
 
-**Готовый файл.** Скачайте `Portal.exe` со страницы [Releases](../../releases) и запустите.
+## Installation
 
-**Из исходников.** Склонируйте репозиторий и запустите `build.cmd` — он соберёт `Portal.exe` компилятором,
-встроенным в Windows. Затем запустите `Portal.exe`.
+**Prebuilt.** Download `Portal.exe` from [Releases](../../releases) and run it.
 
-При первом запуске Portal копирует себя в `%LOCALAPPDATA%\Portal`, включает автозапуск и перезапускается оттуда.
-Запуск новой сборки из любой другой папки обновляет установленную копию.
+**From source.** Clone the repository and run `build.cmd` — it builds `Portal.exe` with the C# compiler that comes
+with Windows. Then run `Portal.exe`.
 
-## Как пользоваться
+On first run Portal copies itself to `%LOCALAPPDATA%\Portal`, enables autostart and restarts from there. Running a
+new build from any other folder updates the installed copy.
 
-| Действие | Как |
+`Portal.exe` is not code-signed, so Windows SmartScreen may warn about an unknown publisher. Click
+"More info" → "Run anyway", or build it yourself from source.
+
+## Usage
+
+| Action | How |
 |---|---|
-| Открыть список | зажать **Alt+Q** |
-| Выбрать окно, держа Alt | нажимать **Q** ещё раз или навести мышь, затем отпустить Alt |
-| Выбрать окно в открытом списке | клик, **↑ ↓** + **Enter**, или начать печатать название |
-| Закрыть список | **Esc** или клик мимо |
-| Выйти из портала | клик в любое другое окно или ещё раз **Alt+Q** |
+| Open the list | hold **Alt+Q** |
+| Pick a window while holding Alt | press **Q** again or hover with the mouse, then release Alt |
+| Pick a window in the open list | click, **↑ ↓** + **Enter**, or start typing its name |
+| Close the list | **Esc** or click outside |
+| Leave the portal | click any other window or press **Alt+Q** again |
 
-Значок в трее: настройки, перезагрузка настроек, автозапуск, выход.
+Tray icon: open settings, reload settings, autostart toggle, exit.
 
-## Настройки
+## Settings
 
-Файл `%LOCALAPPDATA%\Portal\Portal.ini` (значок в трее → «Открыть настройки», после правки — «Перезагрузить настройки»):
+File `%LOCALAPPDATA%\Portal\Portal.ini` (tray icon → open settings; after editing → reload settings):
 
-| Параметр | По умолчанию | Что делает |
+| Key | Default | What it does |
 |---|---|---|
-| `Hotkey` | `Alt+Q` | Горячая клавиша: `Ctrl`, `Alt`, `Shift`, `Win` + клавиша. Например `Ctrl+Alt+Space`, ``Alt+` `` |
-| `Width` | `45` | Ширина портала, % от рабочей области монитора |
-| `Height` | `60` | Высота портала, % от рабочей области монитора |
-| `MaxFps` | `0` | Частота огненной рамки, пока портал открыт (`0` — как у монитора). Меньше — меньше нагрузка на процессор |
+| `Hotkey` | `Alt+Q` | Hotkey: `Ctrl`, `Alt`, `Shift`, `Win` + a key, e.g. `Ctrl+Alt+Space`, ``Alt+` `` |
+| `Width` | `45` | Portal width, % of the monitor's work area |
+| `Height` | `60` | Portal height, % of the monitor's work area |
+| `MaxFps` | `0` | Frame rate of the fire ring while a portal is open (`0` = monitor rate). Lower means less CPU |
 
-## Удаление
+## Uninstall
 
-1. Значок в трее → снять галочку «Запускать вместе с Windows» → «Выход».
-2. Удалить папку `%LOCALAPPDATA%\Portal`.
+1. Tray icon → uncheck "start with Windows" → exit.
+2. Delete the `%LOCALAPPDATA%\Portal` folder.
 
-## Как это устроено
+## How it works
 
-Всё в одном файле [`src/Portal.cs`](src/Portal.cs), на C# и WinForms, без сторонних библиотек.
+Everything lives in a single file, [`src/Portal.cs`](src/Portal.cs) — C# and WinForms, no third-party libraries.
 
-- **Портал** — это само окно: Portal меняет его положение и размер (`SetWindowPlacement` / `SetWindowPos`) и
-  запоминает, как было. Системные анимации окна на время переноса выключены (`DWMWA_TRANSITIONS_FORCEDISABLED`),
-  а места, где окно исчезает или появляется, накрываются снимком экрана, который плавно растворяется.
-- **Стекло** — снимок экрана под списком размывается и преломляется по краям каждой капсулы, как в толстой линзе
-  (с лёгкой хроматической аберрацией). Капсулы рисуются заранее в фоновом потоке, а кадр анимации собирается
-  из готовых картинок собственным многопоточным кодом, без GDI+.
-- **Огненное кольцо** — layered-окно поверх всех, прозрачное для мыши, со своим потоком и ожиданием кадрового
-  импульса видеокарты (`D3DKMTWaitForVerticalBlankEvent`). Искры — частицы, которые рисуются прямо в пиксели
-  со сложением яркости.
+- **The portal** is the window itself: Portal changes its position and size (`SetWindowPlacement` / `SetWindowPos`)
+  and remembers how it was. The window's own system animations are disabled during the move
+  (`DWMWA_TRANSITIONS_FORCEDISABLED`), and the spots where it disappears or appears are covered with a screenshot that
+  smoothly fades away.
+- **The glass** — a screenshot of what's under the list is blurred and refracted at the edges of each capsule, like
+  a thick lens (with a touch of chromatic aberration). Capsules are pre-rendered on a background thread, and animation
+  frames are composed from ready images by custom multi-threaded code instead of GDI+.
+- **The fire ring** is a click-through, always-on-top layered window with its own thread that waits for the GPU's
+  vertical blank (`D3DKMTWaitForVerticalBlankEvent`). The sparks are particles drawn straight into pixels with additive
+  blending.
 
-## Ограничения
+## Limitations
 
-- **Окна программ, запущенных от администратора**, перенести нельзя, если сам Portal запущен без прав администратора.
-- **Программы на WinForms** сами возвращаются туда, где их свернули: если свернуть такое окно прямо из портала,
-  потом оно развернётся на месте портала.
-- **Список и кольцо не видны в записи экрана и стримах** (OBS и т.п.): они скрыты от захвата экрана, чтобы
-  не попадать в снимки, из которых делаются эффекты.
-- **Горячая клавиша перехватывается везде**, в том числе в играх. Если мешает — поменяйте `Hotkey`.
-- В энергосберегающих режимах питания ноутбука частота анимаций может быть ниже частоты монитора.
+- **Windows of apps running as administrator** can't be moved unless Portal also runs as administrator.
+- **WinForms apps** restore themselves to where they were minimized: if you minimize such a window right from the
+  portal, it will later restore at the portal's position.
+- **The list and the ring don't show up in screen recordings and streams** (OBS etc.): they are excluded from screen
+  capture so they don't end up in the screenshots the effects are built from.
+- **The hotkey is global**, including in games. If it gets in the way, change `Hotkey`.
+- In a laptop's power-saving modes the animation rate may be lower than the monitor's refresh rate.
 
-## Лицензия
+## License
 
 [MIT](LICENSE)
-
----
-
-### English
-
-**Portal** opens any running window as a "portal" right around your mouse cursor on Windows 10/11.
-Hold **Alt+Q** — an iOS Liquid Glass–style window list springs out of the cursor. Pick a window — it opens inside a
-Doctor Strange–style ring of sparks, centered on the cursor. Click elsewhere (or press the hotkey again) — the portal
-collapses and the window goes back exactly where it was. Typing filters the list (keyboard layout–independent),
-animations run in sync with your monitor's refresh rate, and the app installs itself to `%LOCALAPPDATA%\Portal`
-with autostart. Build with `build.cmd` (uses the C# compiler that ships with Windows) or grab `Portal.exe` from Releases.
-Single source file, no dependencies, MIT license.
