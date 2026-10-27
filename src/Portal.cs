@@ -1451,7 +1451,9 @@ namespace Portal
         void PaintCapsules()
         {
             string emptyText = all.Count == 0 ? "Нет открытых окон" : "Ничего не найдено";
-            foreach (int job in jobs.GetConsumingEnumerable())
+            IEnumerable<int> queue;
+            try { queue = jobs.GetConsumingEnumerable(); } catch { return; }
+            foreach (int job in queue)
             {
                 try
                 {
@@ -1982,23 +1984,33 @@ namespace Portal
 
         void RunLoop()
         {
-            using (var vblank = new VBlank())
+            try
             {
-                vblank.Reset();
-                while (!closed)
+                using (var vblank = new VBlank())
                 {
-                    vblank.Wait();
-                    Application.DoEvents();
-                    if (closed) break;
-                    if (abortRequested) { Close(); break; }
-                    // Кадр рисуется сразу после импульса кадра экрана. Если он не успел до следующего,
-                    // ожидание само попадает в следующий импульс — темп остаётся ровным (240 → 120).
-                    lock (sync)
+                    vblank.Reset();
+                    while (!closed)
                     {
-                        Frame();
-                        if (renderRequested) { renderRequested = false; rendered.Set(); }
+                        vblank.Wait();
+                        Application.DoEvents();
+                        if (closed) break;
+                        if (abortRequested) { Close(); break; }
+                        // Кадр рисуется сразу после импульса кадра экрана. Если он не успел до следующего,
+                        // ожидание само попадает в следующий импульс — темп остаётся ровным (240 → 120).
+                        lock (sync)
+                        {
+                            Frame();
+                            if (renderRequested) { renderRequested = false; rendered.Set(); }
+                        }
                     }
                 }
+            }
+            catch
+            {
+                // Ошибка в анимации не должна ронять программу: просто убираем кольцо.
+                closed = true;
+                rendered.Set();
+                try { if (!IsDisposed) Close(); } catch { }
             }
         }
 
@@ -2527,23 +2539,26 @@ namespace Portal
         // keepMinimized — окно свернули из портала; focusPrevious — выход по горячей клавише.
         public void Close(bool keepMinimized, bool focusPrevious)
         {
-            if (ring != null)
+            // Сразу забираем кольцо и окно себе. Пока главный поток ждёт поток кольца, Windows может
+            // доставить ещё одно событие и вложенно вызвать Close — тот вызов найдёт пустые поля и ничего не сделает.
+            var closingRing = ring;
+            ring = null;
+            IntPtr h = hwnd;
+            hwnd = IntPtr.Zero;
+            if (closingRing != null)
             {
                 // снимок окна (без кромки кольца) — он утянется в схлопывающееся кольцо
                 Bitmap shot = null;
                 Rectangle v = Rectangle.Empty;
-                if (!keepMinimized && hwnd != IntPtr.Zero && Native.IsWindow(hwnd) && !Native.IsIconic(hwnd) && Native.VisibleBounds(hwnd, out v))
+                if (!keepMinimized && h != IntPtr.Zero && Native.IsWindow(h) && !Native.IsIconic(h) && Native.VisibleBounds(h, out v))
                 {
                     v.Inflate(-2, -2);
                     shot = Native.ScreenShot(v);
                 }
-                ring.Collapse(shot, v);
-                ring.RenderNow(); // снимок окна уже в кольце — само окно можно убирать
-                ring = null;
+                closingRing.Collapse(shot, v);
+                closingRing.RenderNow(); // снимок окна уже в кольце — само окно можно убирать
             }
-            IntPtr h = hwnd;
             if (h == IntPtr.Zero) return;
-            hwnd = IntPtr.Zero;
             if (!Native.IsWindow(h)) return;
 
             int color = DefaultBorder;
@@ -2614,31 +2629,39 @@ namespace Portal
             Native.SetWindowPlacement(h, ref p);
         }
 
+        // Колбэк событий Windows вызывается мимо обработки ошибок WinForms: любое исключение здесь
+        // закрыло бы всю программу, поэтому ловим всё.
         void OnWinEvent(IntPtr hook, uint evt, IntPtr w, int idObject, int idChild, uint thread, uint time)
         {
-            if (w == IntPtr.Zero) return;
-            if (evt == Native.EVENT_SYSTEM_MINIMIZEEND)
+            try
             {
-                if (w == minimized) FinishMinimize();
-                return;
-            }
-            if (hwnd == IntPtr.Zero) return;
-            if (evt == Native.EVENT_OBJECT_DESTROY)
-            {
-                if (idObject == 0 && w == hwnd)
+                if (w == IntPtr.Zero) return;
+                if (evt == Native.EVENT_SYSTEM_MINIMIZEEND)
                 {
-                    hwnd = IntPtr.Zero;
-                    if (ring != null) { ring.Collapse(null, Rectangle.Empty); ring = null; }
+                    if (w == minimized) FinishMinimize();
+                    return;
+                }
+                if (hwnd == IntPtr.Zero) return;
+                if (evt == Native.EVENT_OBJECT_DESTROY)
+                {
+                    if (idObject == 0 && w == hwnd)
+                    {
+                        hwnd = IntPtr.Zero;
+                        var closingRing = ring;
+                        ring = null;
+                        if (closingRing != null) closingRing.Collapse(null, Rectangle.Empty);
+                    }
+                }
+                else if (evt == Native.EVENT_SYSTEM_MINIMIZESTART)
+                {
+                    if (w == hwnd) Close(true, false);
+                }
+                else if (!Owns(w))
+                {
+                    Close(false, false);
                 }
             }
-            else if (evt == Native.EVENT_SYSTEM_MINIMIZESTART)
-            {
-                if (w == hwnd) Close(true, false);
-            }
-            else if (!Owns(w))
-            {
-                Close(false, false);
-            }
+            catch { }
         }
 
         public void Dispose()
