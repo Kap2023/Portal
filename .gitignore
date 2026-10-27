@@ -1,0 +1,12 @@
+# Сборка
+*.exe
+*.pdb
+bin/
+obj/
+
+# Настройки создаются программой при первом запуске
+Portal.ini
+
+# Windows
+Thumbs.db
+Desktop.ini
